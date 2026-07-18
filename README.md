@@ -27,7 +27,7 @@ Hamroshare is designed to be completely self-hosted.
 
 ### 1. Clone the Repository
 ```bash
-git clone [https://github.com/adonisamitsah/hamroshare.git](https://github.com/adonisamitsah/hamroshare.git)
+git clone https://github.com/adonisamitsah/hamroshare.git
 cd hamroshare
 ```
 
