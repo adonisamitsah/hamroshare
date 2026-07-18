@@ -57,5 +57,12 @@ To automate IPO scanning, portfolio syncing, and signal generation, set up a cro
 0 * * * * php /path/to/hamroshare/run_all_crons.php
 ```
 
+## 💡 Full Disclosure
+A significant portion of this codebase originates from a basic model I built back in 2020 to manage multiple accounts. Since then, the system has undergone massive changes and iterations. 
+
+Because of this evolution, you might notice that some coding practices in here are "WET" (Write Everything Twice), and a lot of the modern logic was written and refactored with the assistance of AI. But at the end of the day—it works (mostly!). 
+
+Collaborators and pull requests are highly welcome. Feel free to open issues if you spot bugs or have feature requests, and I will try my best to fix them whenever I have the time.
+
 ## ⚠️ Disclaimer
 This software is built for educational and personal portfolio management purposes. The algorithmic signals (RSI/SMA) do not constitute financial advice. Always do your own research before executing trades on NEPSE.
