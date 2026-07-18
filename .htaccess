@@ -1,0 +1,86 @@
+# ======================================================================
+# HAMROSHARE MASTER APACHE CONFIGURATION
+# ======================================================================
+
+# ----------------------------------------------------------------------
+# 1. CORE SECURITY: Block Sensitive Backend Files
+# ----------------------------------------------------------------------
+# CRITICAL: Prevents anyone from downloading your SQLite database, 
+# cron debug logs, process lock files, or environment configurations.
+<FilesMatch "\.(sqlite|sqlite3|db|db3|log|lock|env|ini|md|json|msbak)$">
+    Require all denied
+</FilesMatch>
+
+# Explicitly block direct web access to your database config file
+<Files "config.php">
+    Require all denied
+</Files>
+
+# ----------------------------------------------------------------------
+# 2. DIRECTORY PROTECTION
+# ----------------------------------------------------------------------
+# Prevents visitors from seeing a list of files if an index.php is missing
+Options -Indexes
+
+# Block access to hidden directories (like .git or .well-known)
+<IfModule mod_rewrite.c>
+    RewriteEngine On
+    RewriteCond %{REQUEST_URI} "!(^|/)\.well-known/([^./]+./?)+$" [NC]
+    RewriteCond %{SCRIPT_FILENAME} -d [OR]
+    RewriteCond %{SCRIPT_FILENAME} -f
+    RewriteRule "(^|/)\." - [F]
+</IfModule>
+
+# ----------------------------------------------------------------------
+# 3. FORCE HTTPS & WWW ROUTING
+# ----------------------------------------------------------------------
+# Forces all traffic to use secure SSL encryption
+<IfModule mod_rewrite.c>
+    RewriteEngine On
+    RewriteCond %{HTTPS} off
+    RewriteRule ^(.*)$ https://%{HTTP_HOST}%{REQUEST_URI} [L,R=301]
+</IfModule>
+
+# ----------------------------------------------------------------------
+# 4. PERFORMANCE: GZIP Compression
+# ----------------------------------------------------------------------
+# Compresses Tailwind CSS, JavaScript, and HTML before sending to browser
+<IfModule mod_deflate.c>
+    AddOutputFilterByType DEFLATE text/html text/plain text/xml text/css
+    AddOutputFilterByType DEFLATE application/javascript application/x-javascript
+    AddOutputFilterByType DEFLATE application/json
+    AddOutputFilterByType DEFLATE image/svg+xml
+</IfModule>
+
+# ----------------------------------------------------------------------
+# 5. PERFORMANCE: Browser Caching
+# ----------------------------------------------------------------------
+# Tells browsers to save images and fonts locally so the dashboard loads instantly
+<IfModule mod_expires.c>
+    ExpiresActive On
+    ExpiresByType image/jpg "access plus 1 year"
+    ExpiresByType image/jpeg "access plus 1 year"
+    ExpiresByType image/png "access plus 1 year"
+    ExpiresByType image/webp "access plus 1 year"
+    ExpiresByType image/svg+xml "access plus 1 month"
+    ExpiresByType text/css "access plus 1 month"
+    ExpiresByType application/javascript "access plus 1 month"
+    ExpiresByType font/woff2 "access plus 1 year"
+</IfModule>
+
+# ----------------------------------------------------------------------
+# 6. MODERN SECURITY HEADERS
+# ----------------------------------------------------------------------
+<IfModule mod_headers.c>
+    # Prevent clickjacking (loading your app in a malicious iframe)
+    Header set X-Frame-Options "SAMEORIGIN"
+    
+    # Prevent browsers from guessing file types (MIME-sniffing)
+    Header set X-Content-Type-Options "nosniff"
+    
+    # Force browsers to strictly use HTTPS for the next year (HSTS)
+    Header set Strict-Transport-Security "max-age=31536000; includeSubDomains"
+    
+    # Do not leak referral data when linking to external sites
+    Header set Referrer-Policy "strict-origin-when-cross-origin"
+</IfModule>

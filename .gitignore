@@ -1,0 +1,29 @@
+# 1. Databases (Crucial for SQLite)
+*.sqlite
+*.sqlite3
+*.sqbpro
+*.db
+*-shm
+*-wal
+
+# 2. Environment & Configs
+.env
+
+
+# 3. Specific Scripts to Hide
+
+test.php
+
+
+# 4. Caches & Generated Data
+market_cache/
+gonepse.json
+raw_data.json
+cron_debug.log
+error_log
+
+# 5. IDEs & Dependencies
+.vscode/
+node_modules/
+vendor/
+backup/
