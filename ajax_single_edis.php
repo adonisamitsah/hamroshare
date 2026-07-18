@@ -2,7 +2,8 @@
 // ajax_single_edis.php
 header('Content-Type: application/json');
 
-require_once __DIR__ . '/config.php'; /** * @var SQLite3 $db */
+require_once __DIR__ . '/config.php';
+/** * @var SQLite3 $db */
 require_once __DIR__ . '/php_function.php';
 require_once __DIR__ . '/class_edis_automation.php';
 require_once __DIR__ . '/class_auth_manager.php';
@@ -44,8 +45,6 @@ try {
 
     // 6. Return Data to UI
     echo json_encode($report);
-
 } catch (Exception $e) {
     echo json_encode(['status' => 'error', 'message' => 'System Error: ' . $e->getMessage()]);
 }
-?>

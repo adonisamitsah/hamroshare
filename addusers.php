@@ -1,5 +1,6 @@
-<?php 
-require_once __DIR__ . '/config.php'; /** * @var SQLite3 $db */
+<?php
+require_once __DIR__ . '/config.php';
+/** * @var SQLite3 $db */
 require_once __DIR__ . '/php_function.php';
 
 echo sudo_get_header("addusers");
@@ -12,14 +13,14 @@ echo sudo_get_header("addusers");
 
 <div class="bg-[#161b22] border border-slate-800 rounded-2xl p-6 mb-8 shadow-sm">
     <h3 class="text-xs font-bold text-blue-500 uppercase tracking-[0.2em] mb-6">Create New Profile</h3>
-    
+
     <form id="addUserForm" method="post" action="<?= htmlspecialchars($_SERVER["PHP_SELF"]); ?>" class="space-y-6">
         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            
+
             <div class="space-y-1">
                 <label class="text-[11px] text-slate-500 font-semibold uppercase ml-1">Account Holder Name</label>
                 <input type="text" placeholder="e.g. John Doe" name="name" required
-                       class="w-full bg-slate-900 border border-slate-700 rounded-xl px-4 py-2.5 text-slate-200 focus:ring-2 focus:ring-blue-600/50 outline-none transition-all placeholder:text-slate-600"/>
+                    class="w-full bg-slate-900 border border-slate-700 rounded-xl px-4 py-2.5 text-slate-200 focus:ring-2 focus:ring-blue-600/50 outline-none transition-all placeholder:text-slate-600" />
             </div>
 
             <div class="space-y-1">
@@ -34,33 +35,33 @@ echo sudo_get_header("addusers");
                         <input type="hidden" name="clientId" id="clientIdInput" required>
 
                         <div class="options-list hidden absolute z-50 w-full mt-2 bg-[#0d1117] border border-slate-800 rounded-xl shadow-2xl max-h-72 overflow-y-auto custom-scrollbar">
-                            <?php 
-                                $rawOptions = sudo_get_capital_as_options($db);
-                                
-                                // Safely extract options
-                                if (preg_match_all('/<option value="(.*?)">(.*?)<\/option>/', $rawOptions, $matches)) {
-                                    for ($i = 0; $i < count($matches[0]); $i++) {
-                                        $val = htmlspecialchars($matches[1][$i], ENT_QUOTES, 'UTF-8');
-                                        $text = htmlspecialchars($matches[2][$i], ENT_QUOTES, 'UTF-8');
-                                        
-                                        if($val == "") continue;
+                            <?php
+                            $rawOptions = sudo_get_capital_as_options($db);
 
-                                        echo '
-                                        <div class="option-item px-4 py-3 border-b border-slate-800/40 hover:bg-blue-600/10 cursor-pointer transition-colors group" data-value="'.$val.'">
+                            // Safely extract options
+                            if (preg_match_all('/<option value="(.*?)">(.*?)<\/option>/', $rawOptions, $matches)) {
+                                for ($i = 0; $i < count($matches[0]); $i++) {
+                                    $val = htmlspecialchars($matches[1][$i], ENT_QUOTES, 'UTF-8');
+                                    $text = htmlspecialchars($matches[2][$i], ENT_QUOTES, 'UTF-8');
+
+                                    if ($val == "") continue;
+
+                                    echo '
+                                        <div class="option-item px-4 py-3 border-b border-slate-800/40 hover:bg-blue-600/10 cursor-pointer transition-colors group" data-value="' . $val . '">
                                             <div class="text-[11px] font-bold text-slate-200 group-hover:text-blue-400 leading-snug break-words">
-                                                '.$text.'
+                                                ' . $text . '
                                             </div>
                                         </div>';
-                                    }
-                                } else {
-                                    echo '<div class="px-4 py-3 text-xs text-rose-400">Failed to load DP List.</div>';
                                 }
+                            } else {
+                                echo '<div class="px-4 py-3 text-xs text-rose-400">Failed to load DP List.</div>';
+                            }
                             ?>
                         </div>
                     </div>
-                    <a href="json-api.php?type=updateCapitalAsOptions" 
-                       class="bg-slate-800 hover:bg-slate-700 text-blue-400 p-3 rounded-xl transition-all flex items-center justify-center border border-slate-700 shrink-0"
-                       title="Sync DP List">
+                    <a href="json-api.php?type=updateCapitalAsOptions"
+                        class="bg-slate-800 hover:bg-slate-700 text-blue-400 p-3 rounded-xl transition-all flex items-center justify-center border border-slate-700 shrink-0"
+                        title="Sync DP List">
                         <i class="fas fa-sync"></i>
                     </a>
                 </div>
@@ -69,25 +70,25 @@ echo sudo_get_header("addusers");
             <div class="space-y-1">
                 <label class="text-[11px] text-slate-500 font-semibold uppercase ml-1">16-Digit Demat Number</label>
                 <input type="text" placeholder="0000000000000000" name="dmat_num" pattern="\d{16}" required
-                       class="w-full bg-slate-900 border border-slate-700 rounded-xl px-4 py-2.5 text-slate-200 focus:ring-2 focus:ring-blue-600/50 outline-none transition-all font-mono"/>
+                    class="w-full bg-slate-900 border border-slate-700 rounded-xl px-4 py-2.5 text-slate-200 focus:ring-2 focus:ring-blue-600/50 outline-none transition-all font-mono" />
             </div>
 
             <div class="space-y-1">
                 <label class="text-[11px] text-slate-500 font-semibold uppercase ml-1">MeroShare Password</label>
                 <input type="text" placeholder="••••••••" name="password" required
-                       class="w-full bg-slate-900 border border-slate-700 rounded-xl px-4 py-2.5 text-slate-200 focus:ring-2 focus:ring-blue-600/50 outline-none transition-all"/>
+                    class="w-full bg-slate-900 border border-slate-700 rounded-xl px-4 py-2.5 text-slate-200 focus:ring-2 focus:ring-blue-600/50 outline-none transition-all" />
             </div>
 
             <div class="space-y-1">
                 <label class="text-[11px] text-slate-500 font-semibold uppercase ml-1">CRN Number</label>
                 <input type="text" placeholder="C-0000000" name="crnNumber" required
-                       class="w-full bg-slate-900 border border-slate-700 rounded-xl px-4 py-2.5 text-slate-200 focus:ring-2 focus:ring-blue-600/50 outline-none transition-all font-mono"/>
+                    class="w-full bg-slate-900 border border-slate-700 rounded-xl px-4 py-2.5 text-slate-200 focus:ring-2 focus:ring-blue-600/50 outline-none transition-all font-mono" />
             </div>
 
             <div class="space-y-1">
                 <label class="text-[11px] text-slate-500 font-semibold uppercase ml-1">4-Digit PIN</label>
                 <input type="text" placeholder="0000" name="transactionPIN" pattern="\d{4}" required
-                       class="w-full bg-slate-900 border border-slate-700 rounded-xl px-4 py-2.5 text-slate-200 focus:ring-2 focus:ring-blue-600/50 outline-none transition-all font-mono"/>
+                    class="w-full bg-slate-900 border border-slate-700 rounded-xl px-4 py-2.5 text-slate-200 focus:ring-2 focus:ring-blue-600/50 outline-none transition-all font-mono" />
             </div>
         </div>
 
@@ -104,8 +105,8 @@ echo sudo_get_header("addusers");
         <span class="absolute inset-y-0 left-0 pl-3 flex items-center text-slate-500">
             <i class="fas fa-search text-xs"></i>
         </span>
-        <input type="text" id="table_search" placeholder="Quick search users..." 
-               class="w-full pl-10 pr-4 py-2 bg-slate-900 border border-slate-800 rounded-lg text-sm text-slate-300 focus:outline-none focus:border-slate-600 transition-all"/>
+        <input type="text" id="table_search" placeholder="Quick search users..."
+            class="w-full pl-10 pr-4 py-2 bg-slate-900 border border-slate-800 rounded-lg text-sm text-slate-300 focus:outline-none focus:border-slate-600 transition-all" />
     </div>
 </div>
 
@@ -122,13 +123,13 @@ echo sudo_get_header("addusers");
                 </tr>
             </thead>
             <tbody class="divide-y divide-slate-800">
-                <?php 
+                <?php
                 $sn = 1;
                 // Added ORDER BY id DESC so the newest users appear at the top automatically
                 $query1 = "SELECT * FROM users ORDER BY id DESC;";
                 $result = $db->query($query1);
-                
-                while($row = $result->fetchArray(SQLITE3_ASSOC)): 
+
+                while ($row = $result->fetchArray(SQLITE3_ASSOC)):
                     // Sanitize outputs to prevent XSS and broken Javascript string limits
                     $dmat = htmlspecialchars($row['dmat_num'], ENT_QUOTES, 'UTF-8');
                     $name = htmlspecialchars($row['name'], ENT_QUOTES, 'UTF-8');
@@ -138,57 +139,57 @@ echo sudo_get_header("addusers");
                     $pin = htmlspecialchars($row['transactionPIN'], ENT_QUOTES, 'UTF-8');
                     $id = htmlspecialchars($row['id'], ENT_QUOTES, 'UTF-8');
                     $isActive = (int)$row['is_active'];
-                    
+
                 ?>
                     <tr class="hover:bg-slate-800/20 transition-colors group <?= $isActive ? '' : 'opacity-50' ?>">
-    <td class="px-6 py-4 text-xs text-slate-600 font-mono"><?= sprintf("%02d", $sn) ?></td>
-    <td class="px-6 py-4">
-        <a href="user.php?dmat=<?= $dmat ?>" class="group block">
-            <div class="flex flex-col">
-                <div class="flex items-center gap-2">
-                    <span class="w-1.5 h-1.5 rounded-full <?= $isActive ? 'bg-emerald-500 shadow-[0_0_8px_rgba(16,185,129,0.8)]' : 'bg-rose-500 shadow-[0_0_8px_rgba(244,63,94,0.8)]' ?>"></span>
-                    <span class="text-sm font-semibold text-slate-200 group-hover:text-blue-400 transition-colors">
-                        <?= $name ?>
-                    </span>
-                </div>
-                <span class="text-[10px] text-blue-500 font-mono uppercase tracking-tighter flex items-center gap-1 pl-3.5">
-                    <?= $dpName ?>
-                    <i class="fas fa-arrow-right opacity-0 -translate-x-2 group-hover:opacity-100 group-hover:translate-x-0 transition-all text-[8px]"></i>
-                </span>
-            </div>
-        </a>
-    </td>
-    <td class="px-6 py-4 text-xs text-slate-400 font-mono"><?= $dmat ?></td>
-    <td class="px-6 py-4">
-        <div class="flex items-center gap-4">
-            <div class="bg-slate-900 px-3 py-1.5 rounded-lg border border-slate-800 flex items-center gap-3">
-                <span class="text-[11px] font-mono text-slate-400 hidetext_" id="password_<?= $dmat ?>"><?= $pwd ?></span>
-                <span class="text-slate-600">|</span>
-                <span class="text-[11px] font-mono text-slate-400 hidetext_" id="crnNumber_<?= $dmat ?>"><?= $crn ?></span>
-                <span class="text-slate-600">|</span>
-                <span class="text-[11px] font-mono text-slate-400 hidetext_" id="transactionPIN_<?= $dmat ?>"><?= $pin ?></span>
-            </div>
-            <button class="text-slate-500 hover:text-white transition-colors cursor-pointer" onclick="eye('<?= $dmat ?>')">
-                <i id="eye_<?= $dmat ?>" class="fas fa-eye text-xs"></i>
-            </button>
-        </div>
-    </td>
-    <td class="px-6 py-4 text-center">
-        <div class="flex items-center justify-center gap-2">
-            <button onclick="openEditModal('<?= $id ?>', '<?= addslashes($name) ?>', '<?= addslashes($pwd) ?>', '<?= addslashes($crn) ?>', '<?= addslashes($pin) ?>', '<?= addslashes($isActive) ?>')" 
-                    class="inline-flex items-center justify-center w-8 h-8 rounded-lg text-slate-500 hover:bg-blue-500/10 hover:text-blue-500 transition-all border border-transparent hover:border-blue-500/20 cursor-pointer">
-                <i class="fas fa-edit text-xs"></i>
-            </button>
-            <button onclick="confirmDelete('<?= $id ?>', '<?= addslashes($name) ?>')" 
-                    class="inline-flex items-center justify-center w-8 h-8 rounded-lg text-slate-500 hover:bg-red-500/10 hover:text-red-500 transition-all border border-transparent hover:border-red-500/20 cursor-pointer">
-                <i class="fas fa-trash text-xs"></i>
-            </button>
-        </div>
-    </td>
-</tr>
-                <?php 
+                        <td class="px-6 py-4 text-xs text-slate-600 font-mono"><?= sprintf("%02d", $sn) ?></td>
+                        <td class="px-6 py-4">
+                            <a href="user.php?dmat=<?= $dmat ?>" class="group block">
+                                <div class="flex flex-col">
+                                    <div class="flex items-center gap-2">
+                                        <span class="w-1.5 h-1.5 rounded-full <?= $isActive ? 'bg-emerald-500 shadow-[0_0_8px_rgba(16,185,129,0.8)]' : 'bg-rose-500 shadow-[0_0_8px_rgba(244,63,94,0.8)]' ?>"></span>
+                                        <span class="text-sm font-semibold text-slate-200 group-hover:text-blue-400 transition-colors">
+                                            <?= $name ?>
+                                        </span>
+                                    </div>
+                                    <span class="text-[10px] text-blue-500 font-mono uppercase tracking-tighter flex items-center gap-1 pl-3.5">
+                                        <?= $dpName ?>
+                                        <i class="fas fa-arrow-right opacity-0 -translate-x-2 group-hover:opacity-100 group-hover:translate-x-0 transition-all text-[8px]"></i>
+                                    </span>
+                                </div>
+                            </a>
+                        </td>
+                        <td class="px-6 py-4 text-xs text-slate-400 font-mono"><?= $dmat ?></td>
+                        <td class="px-6 py-4">
+                            <div class="flex items-center gap-4">
+                                <div class="bg-slate-900 px-3 py-1.5 rounded-lg border border-slate-800 flex items-center gap-3">
+                                    <span class="text-[11px] font-mono text-slate-400 hidetext_" id="password_<?= $dmat ?>"><?= $pwd ?></span>
+                                    <span class="text-slate-600">|</span>
+                                    <span class="text-[11px] font-mono text-slate-400 hidetext_" id="crnNumber_<?= $dmat ?>"><?= $crn ?></span>
+                                    <span class="text-slate-600">|</span>
+                                    <span class="text-[11px] font-mono text-slate-400 hidetext_" id="transactionPIN_<?= $dmat ?>"><?= $pin ?></span>
+                                </div>
+                                <button class="text-slate-500 hover:text-white transition-colors cursor-pointer" onclick="eye('<?= $dmat ?>')">
+                                    <i id="eye_<?= $dmat ?>" class="fas fa-eye text-xs"></i>
+                                </button>
+                            </div>
+                        </td>
+                        <td class="px-6 py-4 text-center">
+                            <div class="flex items-center justify-center gap-2">
+                                <button onclick="openEditModal('<?= $id ?>', '<?= addslashes($name) ?>', '<?= addslashes($pwd) ?>', '<?= addslashes($crn) ?>', '<?= addslashes($pin) ?>', '<?= addslashes($isActive) ?>')"
+                                    class="inline-flex items-center justify-center w-8 h-8 rounded-lg text-slate-500 hover:bg-blue-500/10 hover:text-blue-500 transition-all border border-transparent hover:border-blue-500/20 cursor-pointer">
+                                    <i class="fas fa-edit text-xs"></i>
+                                </button>
+                                <button onclick="confirmDelete('<?= $id ?>', '<?= addslashes($name) ?>')"
+                                    class="inline-flex items-center justify-center w-8 h-8 rounded-lg text-slate-500 hover:bg-red-500/10 hover:text-red-500 transition-all border border-transparent hover:border-red-500/20 cursor-pointer">
+                                    <i class="fas fa-trash text-xs"></i>
+                                </button>
+                            </div>
+                        </td>
+                    </tr>
+                <?php
                     $sn++;
-                endwhile; 
+                endwhile;
                 ?>
             </tbody>
         </table>
@@ -198,56 +199,56 @@ echo sudo_get_header("addusers");
 <?php include('footer.php'); ?>
 
 <script>
-// 1. Implemented Live Table Search (The input was there, but no code backed it up!)
-$("#table_search").on("keyup", function() {
-    let value = $(this).val().toLowerCase();
-    $("#usersTable tbody tr").filter(function() {
-        // Toggle the row based on whether the text matches the search input
-        $(this).toggle($(this).text().toLowerCase().indexOf(value) > -1)
+    // 1. Implemented Live Table Search (The input was there, but no code backed it up!)
+    $("#table_search").on("keyup", function() {
+        let value = $(this).val().toLowerCase();
+        $("#usersTable tbody tr").filter(function() {
+            // Toggle the row based on whether the text matches the search input
+            $(this).toggle($(this).text().toLowerCase().indexOf(value) > -1)
+        });
     });
-});
 
-// 2. Optimized Form Submission
-$("#addUserForm").on("submit", function(e) {
-    e.preventDefault();
-    const form = $(this);
-    const submitBtn = form.find('button[type="submit"]');
-    
-    submitBtn.prop('disabled', true).html('<i class="fas fa-spinner fa-spin"></i> Encrypting...');
+    // 2. Optimized Form Submission
+    $("#addUserForm").on("submit", function(e) {
+        e.preventDefault();
+        const form = $(this);
+        const submitBtn = form.find('button[type="submit"]');
 
-    $.ajax({
-        type: "GET",
-        url: "json-api.php", 
-        data: form.serialize() + "&action=add_user", 
-        dataType: "json",
-        success: function(response) {
-            if (response.status === 'success') {
-                showSentinelModal("Successful", response.message, "success");
-                form[0].reset();
-                $('#dpSelect .current-value').text('Choose DP').addClass('text-slate-500').removeClass('text-slate-100');
-                
-                // Optional: Reload the page after 1.5 seconds so the new user appears in the table
-                setTimeout(() => location.reload(), 1500);
-            } else {
-                showSentinelModal("Access Denied", response.message, "error");
+        submitBtn.prop('disabled', true).html('<i class="fas fa-spinner fa-spin"></i> Encrypting...');
+
+        $.ajax({
+            type: "GET",
+            url: "json-api.php",
+            data: form.serialize() + "&action=add_user",
+            dataType: "json",
+            success: function(response) {
+                if (response.status === 'success') {
+                    showSentinelModal("Successful", response.message, "success");
+                    form[0].reset();
+                    $('#dpSelect .current-value').text('Choose DP').addClass('text-slate-500').removeClass('text-slate-100');
+
+                    // Optional: Reload the page after 1.5 seconds so the new user appears in the table
+                    setTimeout(() => location.reload(), 1500);
+                } else {
+                    showSentinelModal("Access Denied", response.message, "error");
+                }
+            },
+            error: function(xhr) {
+                showSentinelModal("Protocol Error", "The API did not respond correctly. Status: " + xhr.status, "error");
+            },
+            complete: function() {
+                submitBtn.prop('disabled', false).text('Register User');
             }
-        },
-        error: function(xhr) {
-            showSentinelModal("Protocol Error", "The API did not respond correctly. Status: " + xhr.status, "error");
-        },
-        complete: function() {
-            submitBtn.prop('disabled', false).text('Register User');
-        }
+        });
     });
-});
 
-// 3. Delete Modal Logic
-let pendingDeleteId = null;
+    // 3. Delete Modal Logic
+    let pendingDeleteId = null;
 
-function confirmDelete(id, name) {
-    pendingDeleteId = id;
-    
-    const modalHtml = `
+    function confirmDelete(id, name) {
+        pendingDeleteId = id;
+
+        const modalHtml = `
         <div id="sentinel-modal" class="fixed inset-0 z-[9999] flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm">
             <div class="bg-[#161b22] border border-rose-500/30 w-full max-w-sm rounded-2xl shadow-2xl p-6 border-t-4 border-t-rose-600">
                 <div class="flex items-center gap-4 mb-4">
@@ -277,43 +278,43 @@ function confirmDelete(id, name) {
             </div>
         </div>
     `;
-    $('body').append(modalHtml);
-}
-
-function executeDeletion() {
-    if (pendingDeleteId) {
-        window.location.href = `delete-user.php?id=${pendingDeleteId}`;
+        $('body').append(modalHtml);
     }
-}
 
-// 4. Custom Select Logic
-$(document).ready(function() {
-    const dpSelect = $('#dpSelect');
-    const list = dpSelect.find('.options-list');
-    const display = dpSelect.find('.selected-display');
-    const input = $('#clientIdInput');
-    const displayLabel = dpSelect.find('.current-value');
+    function executeDeletion() {
+        if (pendingDeleteId) {
+            window.location.href = `delete-user.php?id=${pendingDeleteId}`;
+        }
+    }
 
-    // Open/Close
-    display.on('click', function(e) {
-        e.stopPropagation();
-        list.toggleClass('hidden');
-        dpSelect.toggleClass('z-[100]');
+    // 4. Custom Select Logic
+    $(document).ready(function() {
+        const dpSelect = $('#dpSelect');
+        const list = dpSelect.find('.options-list');
+        const display = dpSelect.find('.selected-display');
+        const input = $('#clientIdInput');
+        const displayLabel = dpSelect.find('.current-value');
+
+        // Open/Close
+        display.on('click', function(e) {
+            e.stopPropagation();
+            list.toggleClass('hidden');
+            dpSelect.toggleClass('z-[100]');
+        });
+
+        // Select Item
+        dpSelect.on('click', '.option-item', function() {
+            const val = $(this).data('value');
+            const text = $(this).find('div').first().text().trim();
+
+            input.val(val);
+            displayLabel.text(text).removeClass('text-slate-500').addClass('text-slate-100');
+            list.addClass('hidden');
+        });
+
+        // Close on click outside
+        $(document).on('click', function() {
+            list.addClass('hidden');
+        });
     });
-
-    // Select Item
-    dpSelect.on('click', '.option-item', function() {
-        const val = $(this).data('value');
-        const text = $(this).find('div').first().text().trim();
-        
-        input.val(val);
-        displayLabel.text(text).removeClass('text-slate-500').addClass('text-slate-100');
-        list.addClass('hidden');
-    });
-
-    // Close on click outside
-    $(document).on('click', function() {
-        list.addClass('hidden');
-    });
-});
 </script>

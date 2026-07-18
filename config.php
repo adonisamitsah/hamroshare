@@ -7,7 +7,7 @@ $dbPath = __DIR__ . '/' . $dbFile;
 // If DB doesn't exist, and we aren't already on the install page, redirect!
 if (!file_exists($dbPath)) {
     if (file_exists(__DIR__ . '/install.php') && basename($_SERVER['PHP_SELF']) !== 'install.php') {
-        header("Location: /install.php");
+        header("Location: ./install.php");
         exit;
     } else if (!file_exists(__DIR__ . '/install.php')) {
         die("Database missing and install.php not found. Please restore the database or installation file.");
@@ -22,9 +22,10 @@ if (session_status() === PHP_SESSION_NONE) {
 // =========================================================================
 // 1. NATIVE .ENV RUNTIME LOADER FUNCTION
 // =========================================================================
-function loadEnv(string $dir): void {
+function loadEnv(string $dir): void
+{
     $path = rtrim($dir, '/') . '/.env';
-    
+
     if (!file_exists($path)) {
         return; // Gracefully skip if file is missing
     }
@@ -64,7 +65,7 @@ if (defined('ENVIRONMENT') && ENVIRONMENT === 'development') {
     // Production Mode: Suppress display output completely to protect vault paths
     ini_set("display_errors", "0");
     ini_set("display_startup_errors", "0");
-    error_reporting(0); 
+    error_reporting(0);
 }
 
 // =========================================================================
@@ -73,7 +74,8 @@ if (defined('ENVIRONMENT') && ENVIRONMENT === 'development') {
 // =========================================================================
 // 3. CENTRALIZED DATABASE PROVIDER (SINGLETON)
 // =========================================================================
-class Database {
+class Database
+{
     private static ?SQLite3 $instance = null;
 
     // ---------------------------------------------------------------------
@@ -84,20 +86,22 @@ class Database {
     // that bypasses the busyTimeout and causes a database lock.
     private function __construct() {}
     private function __clone() {}
-    public function __wakeup() {
+    public function __wakeup()
+    {
         throw new Exception("Cannot unserialize a database singleton.");
     }
 
-    public static function getConnection(): SQLite3 {
+    public static function getConnection(): SQLite3
+    {
         if (self::$instance === null) {
             $filename = defined('DB_FILENAME') ? DB_FILENAME : 'data.sqlite';
             $dbPath = __DIR__ . '/' . $filename;
-            
+
             self::$instance = new SQLite3($dbPath);
             self::$instance->enableExceptions(true);
 
             // --- SQLITE CONCURRENCY & SPEED OPTIMIZATIONS ---
-            
+
             self::$instance->busyTimeout(15000);
             self::$instance->exec('PRAGMA journal_mode = WAL;');
             self::$instance->exec('PRAGMA synchronous = NORMAL;');
@@ -128,15 +132,18 @@ class Database {
     // ---------------------------------------------------------------------
     // Makes it effortlessly easy to wrap your heavy cron job loops inside 
     // transactions directly from the Database class.
-    public static function beginTransaction(): void {
+    public static function beginTransaction(): void
+    {
         self::getConnection()->exec('BEGIN TRANSACTION;');
     }
-    
-    public static function commit(): void {
+
+    public static function commit(): void
+    {
         self::getConnection()->exec('COMMIT;');
     }
-    
-    public static function rollback(): void {
+
+    public static function rollback(): void
+    {
         self::getConnection()->exec('ROLLBACK;');
     }
 }
@@ -160,12 +167,12 @@ if (!defined('MASTER_HASH')) {
 // =========================================================================
 // 5. WALL SESSION VERIFICATION GATEWAY (WITH RETURN-TO MEMORY CAPTURE)
 // =========================================================================
-$exemptedPages = ['auth.php', 'error_debug.php', 'run_all_crons.php', 's.php','webhook.php'];
-$currentScript = basename($_SERVER['SCRIPT_NAME']); 
+$exemptedPages = ['auth.php', 'error_debug.php', 'run_all_crons.php', 's.php', 'webhook.php'];
+$currentScript = basename($_SERVER['SCRIPT_NAME']);
 
-$isExempt = in_array($currentScript, $exemptedPages) || 
-            strpos($currentScript, 'cron_') === 0 || 
-            strpos($currentScript, 'cr_') === 0;
+$isExempt = in_array($currentScript, $exemptedPages) ||
+    strpos($currentScript, 'cron_') === 0 ||
+    strpos($currentScript, 'cr_') === 0;
 
 if (!$isExempt) {
     if (!isset($_SESSION['master_logged_in']) || $_SESSION['master_logged_in'] !== true) {
@@ -182,6 +189,3 @@ $timezone = $env['APP_TIMEZONE'] ?? 'UTC'; // Fallback to UTC if not set
 
 // Set the global server timezone
 date_default_timezone_set($timezone);
-
-
-?>
