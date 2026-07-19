@@ -6,16 +6,22 @@ set_time_limit(0);
 chdir(__DIR__);
 
 // Core Includes for HamroShare Standardization
-require_once __DIR__ . '/config.php'; /** * @var SQLite3 $db */
+require_once __DIR__ . '/config.php';
+/** * @var SQLite3 $db */
 require_once __DIR__ . '/php_function.php';
 
 // ==========================================
 // CLI PROTECTION
 // ==========================================
 if (php_sapi_name() !== 'cli') {
-    http_response_code(403); 
+    http_response_code(403);
     die(alertMessage('danger', "Access Denied: This script can only be executed via the command line.", true));
 }
+
+// --- HEARTBEAT LOGGING ---
+// Record the exact time this cron successfully finished
+$heartbeat_file = __DIR__ . '/.cron_heartbeat';
+file_put_contents($heartbeat_file, time());
 
 echo str_repeat("=", 60) . "\n";
 echo alertMessage('init', "MASTER CRON RUNNER INITIATED", true);
@@ -29,18 +35,18 @@ sort($files);
 
 foreach ($files as $file) {
     $filename = basename($file);
-    
+
     // 3. INFINITE LOOP PROTECTION: Never execute this script from within itself
     if ($filename === basename(__FILE__)) {
         continue;
     }
 
     echo alertMessage('action', "Starting: $filename", true);
-    
+
     // 4. USE PHP_BINARY: Safely finds the exact PHP executable path
     $command = escapeshellarg(PHP_BINARY) . " " . escapeshellarg($file) . " 2>&1";
     $output = shell_exec($command);
-    
+
 
     // Print the actual result of the sub-script
     if (trim($output) !== '') {
@@ -59,4 +65,3 @@ foreach ($files as $file) {
 echo str_repeat("=", 60) . "\n";
 echo alertMessage('success', "ALL CRON JOBS COMPLETED SUCCESSFULLY", true);
 echo str_repeat("=", 60) . "\n";
-?>
