@@ -45,7 +45,7 @@ Hamroshare is designed to be completely self-hosted.
 
 ### 1. Clone the Repository
 ```bash
-git clone [https://github.com/adonisamitsah/hamroshare.git](https://github.com/adonisamitsah/hamroshare.git)
+git clone https://github.com/adonisamitsah/hamroshare.git
 cd hamroshare
 ```
 
@@ -56,7 +56,7 @@ cp .env.example .env
 ```
 
 ### 3. Run the Installer
-Open the application in your web browser (e.g., `http://localhost:8000`). 
+Open the application in your web browser (e.g., `http://localhost:8000` or `http://localhost`). 
 The system will automatically detect the missing database and redirect you to the database setup wizard (`install.php`). 
 
 Enter your desired Admin Name, Email, and Master Password. The system will build the SQLite database directly from `schema.sql` and inject your secure credentials.
