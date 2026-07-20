@@ -189,3 +189,6 @@ $timezone = $env['APP_TIMEZONE'] ?? 'UTC'; // Fallback to UTC if not set
 
 // Set the global server timezone
 date_default_timezone_set($timezone);
+
+// Your local version
+define('APP_VERSION', '1.0.0');

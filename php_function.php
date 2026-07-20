@@ -203,6 +203,28 @@ function sudo_get_header($active)
             </aside>
 
             <main id="main">
+                <?php
+                // Call the automated checker
+                $update_status = check_for_updates();
+
+                if ($update_status['update_available']):
+                ?>
+                    <!-- Elegant Update Announcement Bar -->
+                    <div class="w-full bg-gradient-to-r from-blue-600/20 via-indigo-600/20 to-blue-600/20 border-b border-blue-500/30 px-4 py-2 flex items-center justify-center gap-2 text-center text-xs backdrop-blur-md z-50 relative">
+                        <span class="flex h-2 w-2 relative">
+                            <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-blue-400 opacity-75"></span>
+                            <span class="relative inline-flex rounded-full h-2 w-2 bg-blue-500"></span>
+                        </span>
+                        <span class="text-slate-300 font-medium tracking-wide">
+                            A new update <span class="text-blue-400 font-bold">v<?= htmlspecialchars($update_status['latest_version']) ?></span> is available! (Current: v<?= htmlspecialchars($update_status['local_version']) ?>)
+                        </span>
+                        <a href="https://github.com/adonisamitsah/hamroshare" target="_blank" class="ml-2 px-2.5 py-0.5 rounded-md bg-blue-500/10 hover:bg-blue-500/20 text-blue-400 border border-blue-500/30 transition-all duration-200 text-[11px] font-semibold tracking-wider uppercase active:scale-95">
+                            Changelog <i class="fas fa-external-link-alt ml-1 text-[9px]"></i>
+                        </a>
+                    </div>
+                <?php endif; ?>
+
+                <!-- Your Clean Header Component -->
                 <header class="h-16 border-b border-slate-800 flex items-center px-4 md:px-8 justify-between sticky top-0 bg-[#0d1117]/80 backdrop-blur-xl z-40">
                     <div class="flex items-center gap-4">
                         <button id="toggleMenu" class="w-10 h-10 flex items-center justify-center rounded-xl hover:bg-slate-800 transition-colors text-slate-400">
@@ -2485,6 +2507,81 @@ function sudo_get_header($active)
             </div>
         </div>';
                 }
+            }
+
+            /**
+             * Extracts the latest semantic version from a Markdown changelog string.
+             */
+            function parse_version_from_changelog($content)
+            {
+                if ($content !== false && preg_match_all('/^##\s+(.+)$/m', $content, $matches)) {
+                    foreach ($matches[1] as $header) {
+                        if (preg_match('/([0-9]+\.[0-9]+\.[0-9]+)/', $header, $version_match)) {
+                            return $version_match[1]; // Returns the first found version (e.g., "1.0.2")
+                        }
+                    }
+                }
+                return '1.0.0'; // Safe fallback
+            }
+
+            /**
+             * Reads a changelog file from either a local path or a remote URL.
+             */
+            function get_version_from_source($source)
+            {
+                // If it's a remote URL, fetch it securely with cURL
+                if (filter_var($source, FILTER_VALIDATE_URL)) {
+                    $ch = curl_init();
+                    curl_setopt($ch, CURLOPT_URL, $source);
+                    curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+                    curl_setopt($ch, CURLOPT_USERAGENT, 'Hamroshare-AppImage');
+                    curl_setopt($ch, CURLOPT_TIMEOUT, 5);
+                    $content = curl_exec($ch);
+                    curl_close($ch);
+                    return parse_version_from_changelog($content);
+                }
+
+                // Otherwise, handle it as a local file path
+                if (file_exists($source)) {
+                    $content = file_get_contents($source);
+                    return parse_version_from_changelog($content);
+                }
+
+                return '1.0.0';
+            }
+
+            /**
+             * Main update checker leveraging local and remote Markdown files.
+             */
+            function check_for_updates()
+            {
+                $cache_file = __DIR__ . '/.version_cache.json';
+                $cache_time = 14400; // 4 hours
+
+                // 1. Return cache if it is still fresh
+                if (file_exists($cache_file) && (time() - filemtime($cache_file)) < $cache_time) {
+                    return json_decode(file_get_contents($cache_file), true);
+                }
+
+                // 2. Resolve paths dynamically
+                $local_path = __DIR__ . '/CHANGELOG.md';
+                $remote_url = "https://raw.githubusercontent.com/adonisamitsah/hamroshare/main/CHANGELOG.md";
+
+                $local_version  = get_version_from_source($local_path);
+                $remote_version = get_version_from_source($remote_url);
+
+                $update_available = version_compare($remote_version, $local_version, '>');
+
+                // 3. Cache the calculated metrics
+                $cache_data = [
+                    'update_available' => $update_available,
+                    'local_version'    => $local_version,
+                    'latest_version'   => $remote_version,
+                    'checked_at'       => time()
+                ];
+                file_put_contents($cache_file, json_encode($cache_data));
+
+                return $cache_data;
             }
 
                 ?>
