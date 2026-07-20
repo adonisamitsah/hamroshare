@@ -5,6 +5,11 @@
 ![SQLite](https://img.shields.io/badge/SQLite-3-003B57.svg)
 ![License](https://img.shields.io/badge/license-MIT-green.svg)
 
+## 🚀 Installation Guide
+
+> **🟢 New to coding or servers?** 
+> Check out our visual, step-by-step **[Beginner's Installation Guide for Windows & Linux](https://github.com/adonisamitsah/hamroshare/wiki/Installation%E2%80%90Guide)** in the Wiki. No command line experience required!
+
 Hamroshare is a self-hosted, all-in-one command center built to seamlessly manage multiple Meroshare (NEPSE) accounts from a single unified dashboard. Designed to eliminate the repetitive friction of managing family or client portfolios, it handles everything from bulk IPO applications and automated result checking to complex profit distribution and ledger management.
 
 Powered by background cron jobs and quantitative algorithms, Hamroshare acts as your personal financial assistant—working silently to automatically apply for new IPOs, rotate expiring passwords, track account renewals, and deliver intelligent sell/hold/risk-reduction signals for your allotted shares directly via Telegram and WhatsApp.
