@@ -28,3 +28,5 @@ backup/
 .DS_Store              <-- ADD THIS (Ignores Mac junk files)
 Thumbs.db              <-- ADD THIS (Ignores Windows junk files)
 Linux/releases/
+
+Linux/appimagetool-x86_64.AppImage
