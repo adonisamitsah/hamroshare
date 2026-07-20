@@ -1,0 +1,8 @@
+[Desktop Entry]
+Name=HamroShare
+Exec=AppRun
+Icon=hamroshare
+Type=Application
+Categories=Utility;Finance;
+Terminal=false
+X-AppImage-Version=1.0.2

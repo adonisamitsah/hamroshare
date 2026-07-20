@@ -1,0 +1,55 @@
+#!/bin/sh
+# Find where the AppImage is mounted (Read-Only)
+HERE="$(dirname "$(readlink -f "$0")")"
+
+# Define the writable directory
+WRITABLE_DIR="$HOME/.hamroshare/www"
+mkdir -p "$WRITABLE_DIR"
+
+# Sync files to the writable directory
+cp -ru "$HERE/www/hamroshare/." "$WRITABLE_DIR/"
+
+# ==========================================
+# 1. CRON JOB INTERCEPTOR
+# ==========================================
+# If triggered by the system cron, run the PHP script and exit silently
+if [ "$1" = "--cron" ]; then
+    "$HERE/usr/bin/php" "$WRITABLE_DIR/run_all_crons.php"
+    exit 0
+fi
+
+# ==========================================
+# 2. AUTO-INSTALL SYSTEM CRONTAB
+# ==========================================
+# Safely grab the real path of the downloaded .AppImage file
+if [ -n "$APPIMAGE" ]; then
+    REAL_APPIMAGE_PATH="$APPIMAGE"
+else
+    # Fallback just in case you run it unpacked during testing
+    REAL_APPIMAGE_PATH="$(readlink -f "$0")"
+fi
+
+# Define the exact cron schedule (Runs every 5 minutes and logs to cron_debug.log)
+CRON_CMD="*/5 * * * * \"$REAL_APPIMAGE_PATH\" --cron >> \"$HOME/.hamroshare/www/cron_debug.log\" 2>&1"
+
+# Check if the cron job is already installed. If not, inject it.
+if ! crontab -l 2>/dev/null | grep -Fq "$REAL_APPIMAGE_PATH --cron"; then
+    (crontab -l 2>/dev/null; echo "$CRON_CMD") | crontab -
+    echo "HamroShare cron job automatically installed to system."
+fi
+
+# ==========================================
+# 3. START WEB SERVER & BROWSER (Normal Mode)
+# ==========================================
+# Start the PHP server from the WRITABLE directory
+"$HERE/usr/bin/php" -S 127.0.0.1:8000 -t "$WRITABLE_DIR" > /dev/null 2>&1 &
+SERVER_PID=$!
+
+# Wait a brief moment for the server to boot
+sleep 1
+
+# Open the local dashboard in the browser
+xdg-open http://127.0.0.1:8000/dashboard.php
+
+# Keep the script alive until the user closes the terminal/app
+wait $SERVER_PID

@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<component type="desktop-application">
+  <id>com.hamroshare.app</id>
+  <metadata_license>CC0-1.0</metadata_license>
+  <name>HamroShare</name>
+  <summary>Unified NEPSE Portfolio &amp; IPO Manager</summary>
+  <description>
+    <p>HamroShare is a self-hosted, all-in-one command center designed to manage multiple Meroshare (NEPSE) accounts from a unified dashboard.</p>
+    <p>It acts as a personal financial assistant that automates IPO applications, tracks account renewals, and manages bulk portfolio operations through background cron jobs.</p>
+  </description>
+  <categories>
+    <category>Finance</category>
+    <category>Office</category>
+  </categories>
+  <developer_name>Amit Sah</developer_name>
+</component>
