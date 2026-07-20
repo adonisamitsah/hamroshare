@@ -9,11 +9,8 @@
 # 2. Environment & Configs
 .env
 
-
 # 3. Specific Scripts to Hide
-
 test.php
-
 
 # 4. Caches & Generated Data
 market_cache/
@@ -21,9 +18,12 @@ gonepse.json
 raw_data.json
 cron_debug.log
 error_log
+.update_cache.json     <-- ADD THIS!
 
-# 5. IDEs & Dependencies
+# 5. IDEs, OS Junk & Dependencies
 .vscode/
 node_modules/
 vendor/
 backup/
+.DS_Store              <-- ADD THIS (Ignores Mac junk files)
+Thumbs.db              <-- ADD THIS (Ignores Windows junk files)

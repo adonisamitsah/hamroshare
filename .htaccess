@@ -32,12 +32,14 @@ Options -Indexes
 </IfModule>
 
 # ----------------------------------------------------------------------
-# 3. FORCE HTTPS & WWW ROUTING
+# 3. FORCE HTTPS (Skipping Localhost)
 # ----------------------------------------------------------------------
-# Forces all traffic to use secure SSL encryption
+# Forces all traffic to use secure SSL encryption, EXCEPT for local development.
+# This ensures XAMPP/Localhost users don't get SSL protocol errors.
 <IfModule mod_rewrite.c>
     RewriteEngine On
     RewriteCond %{HTTPS} off
+    RewriteCond %{HTTP_HOST} !^(localhost|127\.0\.0\.1)(:\d+)?$ [NC]
     RewriteRule ^(.*)$ https://%{HTTP_HOST}%{REQUEST_URI} [L,R=301]
 </IfModule>
 
