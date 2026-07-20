@@ -2,11 +2,14 @@
 
 echo "🚀 Starting HamroShare AppImage Build..."
 
-# 1. Download AppImageTool if it doesn't exist
-if [ ! -f "appimagetool-x86_64.AppImage" ]; then
-    echo "⬇️ appimagetool not found. Downloading now..."
-    wget -q --show-progress https://github.com/AppImage/AppImageKit/releases/download/continuous/appimagetool-x86_64.AppImage
-    chmod +x appimagetool-x86_64.AppImage
+# 1. Ensure the releases directory exists
+mkdir -p releases
+
+# 2. Download AppImageTool into the releases directory if it doesn't exist
+if [ ! -f "releases/appimagetool-x86_64.AppImage" ]; then
+    echo "⬇️ appimagetool not found in releases/. Downloading now..."
+    wget -q --show-progress -O releases/appimagetool-x86_64.AppImage https://github.com/AppImage/AppImageKit/releases/download/continuous/appimagetool-x86_64.AppImage
+    chmod +x releases/appimagetool-x86_64.AppImage
 fi
 
 # 2. Ensure the www directory is empty before starting
@@ -31,14 +34,10 @@ else
     echo "🏷️ Found version: v$APP_VER"
 fi
 
-# 5. Build the AppImage with Dynamic Versioning
+
+# 5. Build the AppImage
 echo "📦 Packaging AppImage (Version: $APP_VER)..."
-
-# Ensure the releases directory exists
-mkdir -p releases
-
-# Build and save specifically into the releases directory
-VERSION="$APP_VER" ./appimagetool-x86_64.AppImage Hamroshare.AppDir "releases/HamroShare-$APP_VER-x86_64.AppImage"
+VERSION="$APP_VER" ./releases/appimagetool-x86_64.AppImage Hamroshare.AppDir "releases/HamroShare-$APP_VER-x86_64.AppImage"
 
 # 6. Clean up the downloaded files so your local directory stays empty!
 echo "🧹 Cleaning up temporary files..."
