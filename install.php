@@ -57,6 +57,30 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 $stmtConst->bindValue(':v', $c[1], SQLITE3_TEXT);
                 $stmtConst->execute();
             }
+            $crons = [
+                ['ipo_analyzer', 'IPO Sell Signal', 'Signals to sell/hold IPOs', 'enabled', 1440],
+                ['maintenance', 'Maintenance', 'House keeping database memory and tables.', 'enabled', 1440],
+                ['allshares', 'Global Portfolio Sync', 'Check and Update Portfolio', 'enabled', 1440],
+                ['edis_automation', 'EDIS Automation Engine', 'Proactively calculates WACC...', 'enabled', 1440],
+                ['backup', 'Backup', 'Copies data.sqlite file to Telegram', 'enabled', 1440],
+                ['check_ipo_results', 'IPO Status/Result Check', 'Checks IPO Result status', 'enabled', 1440],
+                ['account_renewal_reminder', 'Demat Expiry Monitor', 'Checks expiry notifications', 'enabled', 1440],
+                ['ipo_scanner', 'IPO Scanner', 'Auto-apply for new IPO issues', 'enabled', 1440],
+                ['password_rotation', 'Password Guardian', 'Rotates MeroShare passwords', 'enabled', 1440]
+            ];
+            // Insert Crons
+            $stmtCron = $db->prepare("INSERT INTO system_crons 
+    (cron_key, display_name, description, status, frequency_minutes) 
+    VALUES (:k, :d, :desc, :s, :f)");
+
+            foreach ($crons as $c) {
+                $stmtCron->bindValue(':k', $c[0], SQLITE3_TEXT);
+                $stmtCron->bindValue(':d', $c[1], SQLITE3_TEXT);
+                $stmtCron->bindValue(':desc', $c[2], SQLITE3_TEXT);
+                $stmtCron->bindValue(':s', $c[3], SQLITE3_TEXT);
+                $stmtCron->bindValue(':f', $c[4], SQLITE3_INTEGER);
+                $stmtCron->execute();
+            }
 
             $message = "<div class='bg-emerald-500/20 border border-emerald-500 text-emerald-400 p-4 rounded mb-4 text-center'>
                             <b>✅ Installation Successful!</b><br>
@@ -64,9 +88,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                             <span class='text-sm mt-2 block text-gray-400'>Please delete <b>install.php</b> before deploying to production.</span>
                             <a href='index.php' class='mt-4 inline-block bg-indigo-600 text-white px-4 py-2 rounded font-bold hover:bg-indigo-500'>Go to Login</a>
                         </div>";
-            
-            $hideForm = true;
 
+            $hideForm = true;
         } catch (Exception $e) {
             if (file_exists($dbPath)) unlink($dbPath); // Cleanup corrupted file
             $message = "<div class='bg-red-500/20 border border-red-500 text-red-400 p-3 rounded mb-4'><b>Database Error:</b> " . $e->getMessage() . "</div>";
@@ -77,17 +100,21 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
 <!DOCTYPE html>
 <html lang="en" class="dark">
+
 <head>
     <meta charset="UTF-8">
     <title>Hamroshare Installer</title>
     <script src="https://cdn.tailwindcss.com"></script>
 </head>
+
 <body class="bg-gray-950 text-gray-200 min-h-screen flex items-center justify-center font-sans p-4">
     <div class="bg-gray-900 border border-gray-800 p-8 rounded-2xl max-w-md w-full shadow-2xl">
-        
+
         <div class="text-center mb-8">
             <div class="w-16 h-16 bg-indigo-500/10 border border-indigo-500/20 rounded-2xl flex items-center justify-center mx-auto mb-4">
-                <svg class="w-8 h-8 text-indigo-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 7v10c0 2.21 3.582 4 8 4s8-1.79 8-4V7M4 7c0 2.21 3.582 4 8 4s8-1.79 8-4M4 7c0-2.21 3.582-4 8-4s8 1.79 8 4m0 5c0 2.21-3.582 4-8 4s-8-1.79-8-4"></path></svg>
+                <svg class="w-8 h-8 text-indigo-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 7v10c0 2.21 3.582 4 8 4s8-1.79 8-4V7M4 7c0 2.21 3.582 4 8 4s8-1.79 8-4M4 7c0-2.21 3.582-4 8-4s8 1.79 8 4m0 5c0 2.21-3.582 4-8 4s-8-1.79-8-4"></path>
+                </svg>
             </div>
             <h1 class="text-2xl font-bold text-white">System Setup</h1>
             <p class="text-gray-400 text-sm mt-1">Initialize the Hamroshare database</p>
@@ -96,25 +123,26 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         <?= $message ?>
 
         <?php if (!isset($hideForm)): ?>
-        <form method="POST" class="space-y-5">
-            <div>
-                <label class="block text-xs uppercase tracking-widest text-gray-500 font-bold mb-1">Admin Name</label>
-                <input type="text" name="admin_name" required placeholder="John Doe" class="w-full bg-gray-950 border border-gray-800 rounded-lg px-4 py-2.5 text-white focus:outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 transition-colors">
-            </div>
-            <div>
-                <label class="block text-xs uppercase tracking-widest text-gray-500 font-bold mb-1">Admin Email</label>
-                <input type="email" name="admin_email" required placeholder="admin@example.com" class="w-full bg-gray-950 border border-gray-800 rounded-lg px-4 py-2.5 text-white focus:outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 transition-colors">
-            </div>
-            <div>
-                <label class="block text-xs uppercase tracking-widest text-gray-500 font-bold mb-1">Master Password</label>
-                <input type="password" name="password" required placeholder="••••••••" class="w-full bg-gray-950 border border-gray-800 rounded-lg px-4 py-2.5 text-white focus:outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 transition-colors">
-            </div>
-            <button type="submit" class="w-full bg-indigo-600 hover:bg-indigo-500 text-white font-bold py-3 rounded-lg transition-colors mt-2 shadow-lg shadow-indigo-900/20">
-                Install & Initialize System
-            </button>
-        </form>
+            <form method="POST" class="space-y-5">
+                <div>
+                    <label class="block text-xs uppercase tracking-widest text-gray-500 font-bold mb-1">Admin Name</label>
+                    <input type="text" name="admin_name" required placeholder="John Doe" class="w-full bg-gray-950 border border-gray-800 rounded-lg px-4 py-2.5 text-white focus:outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 transition-colors">
+                </div>
+                <div>
+                    <label class="block text-xs uppercase tracking-widest text-gray-500 font-bold mb-1">Admin Email</label>
+                    <input type="email" name="admin_email" required placeholder="admin@example.com" class="w-full bg-gray-950 border border-gray-800 rounded-lg px-4 py-2.5 text-white focus:outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 transition-colors">
+                </div>
+                <div>
+                    <label class="block text-xs uppercase tracking-widest text-gray-500 font-bold mb-1">Master Password</label>
+                    <input type="password" name="password" required placeholder="••••••••" class="w-full bg-gray-950 border border-gray-800 rounded-lg px-4 py-2.5 text-white focus:outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 transition-colors">
+                </div>
+                <button type="submit" class="w-full bg-indigo-600 hover:bg-indigo-500 text-white font-bold py-3 rounded-lg transition-colors mt-2 shadow-lg shadow-indigo-900/20">
+                    Install & Initialize System
+                </button>
+            </form>
         <?php endif; ?>
 
     </div>
 </body>
+
 </html>
