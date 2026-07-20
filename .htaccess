@@ -16,9 +16,7 @@
     Require all denied
 </Files>
 
-<Location "/Linux">
-    Require all denied
-</Location>
+
 
 # ----------------------------------------------------------------------
 # 2. DIRECTORY PROTECTION
@@ -33,6 +31,8 @@ Options -Indexes
     RewriteCond %{SCRIPT_FILENAME} -d [OR]
     RewriteCond %{SCRIPT_FILENAME} -f
     RewriteRule "(^|/)\." - [F]
+    # Return a 403 Forbidden for any request attempting to access the Linux folder
+    RewriteRule ^Linux(/.*)?$ - [F,L]
 </IfModule>
 
 # ----------------------------------------------------------------------
