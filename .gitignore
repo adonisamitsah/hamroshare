@@ -27,3 +27,4 @@ vendor/
 backup/
 .DS_Store              <-- ADD THIS (Ignores Mac junk files)
 Thumbs.db              <-- ADD THIS (Ignores Windows junk files)
+Linux/releases/
