@@ -1,6 +1,64 @@
 </div> <!-- Closes the p-8 / Content div -->
-    </main> <!-- Closes the #main tag -->
+
+<?php
+// Dynamically fetch the current app version from the update cache
+$footer_version = '1.0.0'; // Fallback
+$cache_file = __DIR__ . '/.update_cache.json';
+if (file_exists($cache_file)) {
+    $cache_data = json_decode(file_get_contents($cache_file), true);
+    if (is_array($cache_data) && isset($cache_data['local_version'])) {
+        $footer_version = $cache_data['local_version'];
+    } elseif (is_array($cache_data) && isset($cache_data['latest_version'])) {
+        $footer_version = $cache_data['latest_version'];
+    }
+}
+?>
+
+<!-- 🚀 DYNAMIC FOOTER -->
+<footer class="border-t border-slate-800/80 bg-slate-900/20 backdrop-blur-md py-4 px-6 md:px-8 mt-auto w-full">
+    <div class="flex flex-col md:flex-row items-center justify-between gap-4">
+
+        <!-- Left Section: Branding & Author -->
+        <div class="flex items-center gap-2 text-[11px] font-medium text-slate-500 tracking-wide uppercase">
+            <span>&copy; <?= date('Y'); ?> Hamroshare</span>
+            <span class="w-1 h-1 rounded-full bg-slate-700"></span>
+            <span>Built by <a href="https://github.com/adonisamitsah" target="_blank" class="text-blue-500 hover:text-blue-400 transition-colors font-bold">Adonis Amit Sah</a></span>
+        </div>
+
+        <!-- Right Section: Links & Version -->
+        <div class="flex items-center gap-4 text-[11px] font-semibold text-slate-400 uppercase tracking-wider">
+
+            <!-- GitHub Link -->
+            <a href="https://github.com/adonisamitsah/hamroshare" target="_blank" class="hover:text-white transition-colors flex items-center gap-1.5 group" title="View Source on GitHub">
+                <i class="fab fa-github text-sm group-hover:scale-110 transition-transform"></i>
+                <span class="hidden sm:inline">GitHub</span>
+            </a>
+
+            <span class="w-1 h-1 rounded-full bg-slate-700"></span>
+
+            <!-- License Link -->
+            <a href="https://github.com/adonisamitsah/hamroshare/blob/main/LICENSE" target="_blank" class="hover:text-emerald-400 transition-colors flex items-center gap-1.5" title="View MIT License">
+                <i class="fas fa-shield-alt text-[10px]"></i>
+                <span class="hidden sm:inline">MIT License</span>
+            </a>
+
+            <span class="w-1 h-1 rounded-full bg-slate-700"></span>
+
+            <!-- Version/Changelog Link -->
+            <a href="https://github.com/adonisamitsah/hamroshare/blob/main/CHANGELOG.md" target="_blank" class="hover:text-blue-400 transition-colors flex items-center gap-1.5" title="View Changelog">
+                <i class="fas fa-code-branch text-[10px]"></i>
+                <span>v<?= htmlspecialchars($footer_version); ?></span>
+            </a>
+
+        </div>
+    </div>
+</footer>
+<!-- END FOOTER -->
+
+</main> <!-- Closes the #main tag -->
 </div> <!-- Closes the #layout tag -->
+
+
 
 <!-- Core Dependencies -->
 
@@ -16,7 +74,7 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 
 <!-- App Scripts (Ensure this is linked) -->
-<script src="assets/js/app_logic.js"></script> 
+<script src="assets/js/app_logic.js"></script>
 
 <script type="text/javascript">
     // Technical Tooltip Replacement (Simple & Lightweight)
@@ -32,10 +90,10 @@
 
     //master admin logout.
 
-function showConfirmationModal(title, message, confirmCallback) {
-    // 1. Check for/Inject the Modal HTML
-    if ($('#sentinelModal').length === 0) {
-        $('body').append(`
+    function showConfirmationModal(title, message, confirmCallback) {
+        // 1. Check for/Inject the Modal HTML
+        if ($('#sentinelModal').length === 0) {
+            $('body').append(`
             <div id="sentinelModal" style="display:none; position:fixed; inset:0; z-index:9999; background:rgba(2, 6, 23, 0.85); backdrop-filter:blur(8px); align-items:center; justify-content:center; padding:1rem; font-family: 'Inter', sans-serif;">
                 <div style="background:#161b22; border:1px solid #30363d; width:100%; max-width:400px; border-radius:1.5rem; overflow:hidden; box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);">
                     <div style="padding:2rem; text-align:center;">
@@ -48,17 +106,17 @@ function showConfirmationModal(title, message, confirmCallback) {
                 </div>
             </div>
         `);
-    }
+        }
 
-    // 2. Set Content
-    $('#modalTitle').text(title);
-    $('#modalMessage').html(message);
-    
-    // 3. Define the Close Logic
-    const closeModal = () => $('#sentinelModal').css('display', 'none');
+        // 2. Set Content
+        $('#modalTitle').text(title);
+        $('#modalMessage').html(message);
 
-    // 4. Build and Bind Buttons
-    $('#modalFooter').empty().html(`
+        // 3. Define the Close Logic
+        const closeModal = () => $('#sentinelModal').css('display', 'none');
+
+        // 4. Build and Bind Buttons
+        $('#modalFooter').empty().html(`
         <button id="cancelBtn" style="background:transparent; border:none; color:#8b949e; font-size:0.75rem; font-weight:800; cursor:pointer; padding:0.5rem 1rem; text-transform:uppercase; letter-spacing:0.05em;">
             Cancel
         </button>
@@ -67,110 +125,121 @@ function showConfirmationModal(title, message, confirmCallback) {
         </button>
     `);
 
-    // 5. Attach Listeners
-    $('#cancelBtn').on('click', closeModal);
-    
-    $('#confirmBtn').off('click').one('click', function() {
-        if (typeof confirmCallback === 'function') confirmCallback();
-        closeModal();
+        // 5. Attach Listeners
+        $('#cancelBtn').on('click', closeModal);
+
+        $('#confirmBtn').off('click').one('click', function() {
+            if (typeof confirmCallback === 'function') confirmCallback();
+            closeModal();
+        });
+
+        // 6. Show the UI
+        $('#sentinelModal').css('display', 'flex');
+    }
+
+    $(document).on("click", "#master-logout-btn", function(e) {
+        e.preventDefault();
+        showConfirmationModal(
+            "Secure Logout",
+            "Are you sure you want to end your master session and logout?",
+            function() {
+                window.location.href = "logout.php";
+            }
+        );
     });
 
-    // 6. Show the UI
-    $('#sentinelModal').css('display', 'flex');
-}
+    document.addEventListener('DOMContentLoaded', function() {
+        // 1. Live Search Filter
+        const searchInput = document.getElementById('matrix_search');
+        if (searchInput) {
+            const cards = document.querySelectorAll('.matrix-card');
+            searchInput.addEventListener('keyup', function(e) {
+                const term = e.target.value.toLowerCase();
+                cards.forEach(card => {
+                    const scripName = card.getAttribute('data-scrip');
+                    if (scripName.includes(term)) {
+                        card.style.display = 'flex';
+                    } else {
+                        card.style.display = 'none';
+                    }
+                });
+            });
+        }
 
-$(document).on("click", "#master-logout-btn", function(e) {
-    e.preventDefault();
-    showConfirmationModal(
-        "Secure Logout", 
-        "Are you sure you want to end your master session and logout?", 
-        function() { window.location.href = "logout.php"; }
-    );
-});
+        // 2. Initialize God-Level Sparkline Charts
+        Chart.defaults.color = '#64748b';
+        Chart.defaults.font.family = 'monospace';
 
-document.addEventListener('DOMContentLoaded', function() {
-    // 1. Live Search Filter
-    const searchInput = document.getElementById('matrix_search');
-    if(searchInput) {
-        const cards = document.querySelectorAll('.matrix-card');
-        searchInput.addEventListener('keyup', function(e) {
-            const term = e.target.value.toLowerCase();
-            cards.forEach(card => {
-                const scripName = card.getAttribute('data-scrip');
-                if (scripName.includes(term)) {
-                    card.style.display = 'flex';
-                } else {
-                    card.style.display = 'none';
+        document.querySelectorAll('.signal-chart').forEach(canvas => {
+            const ctx = canvas.getContext('2d');
+            const themeColor = canvas.dataset.color; // #10b981, #f43f5e, etc.
+            const prices = JSON.parse(canvas.dataset.prices);
+            const dates = JSON.parse(canvas.dataset.dates);
+
+            // Create a beautiful fade gradient beneath the line
+            let gradient = ctx.createLinearGradient(0, 0, 0, canvas.parentElement.clientHeight);
+            gradient.addColorStop(0, themeColor + '50'); // 50% opacity
+            gradient.addColorStop(1, themeColor + '00'); // 0% opacity
+
+            new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: dates,
+                    datasets: [{
+                        data: prices,
+                        borderColor: themeColor,
+                        backgroundColor: gradient,
+                        borderWidth: 2,
+                        pointRadius: 0, // Hide points for a clean sparkline look
+                        pointHoverRadius: 4,
+                        fill: true,
+                        tension: 0.4 // Smooth curved lines
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            display: false
+                        },
+                        tooltip: {
+                            mode: 'index',
+                            intersect: false,
+                            backgroundColor: '#0f172a',
+                            titleColor: '#94a3b8',
+                            bodyColor: '#f8fafc',
+                            borderColor: '#334155',
+                            borderWidth: 1,
+                            displayColors: false,
+                            callbacks: {
+                                label: function(context) {
+                                    return 'Rs. ' + context.parsed.y;
+                                }
+                            }
+                        }
+                    },
+                    scales: {
+                        x: {
+                            display: false
+                        }, // Hide X axis completely
+                        y: {
+                            display: false, // Hide Y axis
+                            min: Math.min(...prices) * 0.98, // Give slight padding below
+                            max: Math.max(...prices) * 1.02 // Give slight padding above
+                        }
+                    },
+                    interaction: {
+                        mode: 'nearest',
+                        axis: 'x',
+                        intersect: false
+                    }
                 }
             });
         });
-    }
-
-    // 2. Initialize God-Level Sparkline Charts
-    Chart.defaults.color = '#64748b';
-    Chart.defaults.font.family = 'monospace';
-
-    document.querySelectorAll('.signal-chart').forEach(canvas => {
-        const ctx = canvas.getContext('2d');
-        const themeColor = canvas.dataset.color; // #10b981, #f43f5e, etc.
-        const prices = JSON.parse(canvas.dataset.prices);
-        const dates = JSON.parse(canvas.dataset.dates);
-
-        // Create a beautiful fade gradient beneath the line
-        let gradient = ctx.createLinearGradient(0, 0, 0, canvas.parentElement.clientHeight);
-        gradient.addColorStop(0, themeColor + '50'); // 50% opacity
-        gradient.addColorStop(1, themeColor + '00'); // 0% opacity
-
-        new Chart(ctx, {
-            type: 'line',
-            data: {
-                labels: dates,
-                datasets: [{
-                    data: prices,
-                    borderColor: themeColor,
-                    backgroundColor: gradient,
-                    borderWidth: 2,
-                    pointRadius: 0, // Hide points for a clean sparkline look
-                    pointHoverRadius: 4,
-                    fill: true,
-                    tension: 0.4 // Smooth curved lines
-                }]
-            },
-            options: {
-                responsive: true,
-                maintainAspectRatio: false,
-                plugins: {
-                    legend: { display: false },
-                    tooltip: {
-                        mode: 'index',
-                        intersect: false,
-                        backgroundColor: '#0f172a',
-                        titleColor: '#94a3b8',
-                        bodyColor: '#f8fafc',
-                        borderColor: '#334155',
-                        borderWidth: 1,
-                        displayColors: false,
-                        callbacks: {
-                            label: function(context) { return 'Rs. ' + context.parsed.y; }
-                        }
-                    }
-                },
-                scales: {
-                    x: { display: false }, // Hide X axis completely
-                    y: { 
-                        display: false, // Hide Y axis
-                        min: Math.min(...prices) * 0.98, // Give slight padding below
-                        max: Math.max(...prices) * 1.02  // Give slight padding above
-                    } 
-                },
-                interaction: { mode: 'nearest', axis: 'x', intersect: false }
-            }
-        });
     });
-});
 </script>
 
 </body>
+
 </html>
-
-
