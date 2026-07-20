@@ -16,6 +16,10 @@
     Require all denied
 </Files>
 
+<Location "/Linux">
+    Require all denied
+</Location>
+
 # ----------------------------------------------------------------------
 # 2. DIRECTORY PROTECTION
 # ----------------------------------------------------------------------
